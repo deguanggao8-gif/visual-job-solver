@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "generated_by": "scripts/verify-frozen.mjs",
+  "notes": "Do not edit by hand. Regenerate with `npm run verify -- --write` after a deliberate, reviewed freeze change.",
+  "files": {
+    "rules": {
+      "app": "data/rules/concrete-drilling-rules-v0.1.json",
+      "source": "research/v0.1/Concrete-Drilling-Rules-V0.1.json",
+      "sha256": "980f15ac73c5ccd6f547faeecee6d6b92261f5c61f3270d23877b5ef5e2f3a09"
+    },
+    "content": {
+      "app": "data/content/concrete-drilling-content-v0.1.md",
+      "source": "research/v0.1/Concrete-Drilling-Content-V0.1.md",
+      "sha256": "46471dc4397ab9af1429c8d8baf1e8d3e88a31a5aa39a3da4966c145dd865c79"
+    }
+  },
+  "assertions": {
+    "version": "0.1",
+    "status": "frozen",
+    "rule_count": 20,
+    "green": 7,
+    "yellow": 7,
+    "red": 6,
+    "automatic_optimum_ranking": false,
+    "passing_checks_is_sufficient_recommendation": false,
+    "system_chains_are_executable_profiles": false,
+    "fixed_sku_unconditional_approvals": 0
+  }
+}

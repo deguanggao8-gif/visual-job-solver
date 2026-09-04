@@ -1,0 +1,1670 @@
+{
+  "version": "0.1",
+  "job": "concrete_drilling",
+  "status": "frozen",
+  "freeze_date": "2026-09-04",
+  "freeze_scope": "Rule classification and bounded validation contract; not a universal product recommender, construction approval or website release.",
+  "baseline_file": "Concrete-Drilling-Research-V0.1.md",
+  "classification_policy": {
+    "GREEN": "Executable only inside verified matching evidence scope.",
+    "YELLOW": "Explanation only; cannot score, rank, filter or choose tools.",
+    "RED": "No automatic judgement; retained for traceability and prohibited-inference documentation."
+  },
+  "execution_contract": {
+    "active_classification": "GREEN",
+    "required_confidence": "verified",
+    "unknown_result": "request_information_or_verify_manufacturer",
+    "conflicting_result": "withhold_deterministic_recommendation",
+    "positive_site_safety_approval": false,
+    "passing_checks_is_sufficient_recommendation": false,
+    "system_chains_are_executable_profiles": false,
+    "unverified_external_fields_allowed": false,
+    "empty_candidate_result": "No verified combination for the supplied conditions; verify the specific manufacturer system.",
+    "non_concrete_material_result": "outside_job_scope",
+    "anchor_requirements_inferred": false,
+    "automatic_optimum_ranking": false
+  },
+  "predicate_language": {
+    "version": "1",
+    "reference_root": "job, candidate, evidence",
+    "operators": [
+      "eq",
+      "ne",
+      "in",
+      "lt",
+      "gt",
+      "is_null"
+    ],
+    "composition": [
+      "all",
+      "any"
+    ],
+    "literal_operand": "value",
+    "field_operand": "value_from",
+    "units": "Lengths in mm after exact unit normalization; no rounding into an allowed range.",
+    "null_semantics": "Missing/null operands produce unknown except is_null. all: false if any false, true only if all true; any: true if any true, false only if all false; otherwise unknown. Unknown never means validation passed.",
+    "guard_semantics": "evidence.scope_matches must compare manufacturer, model/generation, region, material, drilling method and exact accessory configuration for every referenced fact; it may not be inferred from model-name similarity. Conflict-bearing facts cannot be verified.",
+    "action_semantics": "A true condition triggers its recommendation action. False only means this violation was not established; it does not approve a tool. null conditions are disabled. No YELLOW/RED action may be synthesized from reason text.",
+    "required_provenance": [
+      "manufacturer",
+      "model_or_sku",
+      "region",
+      "material",
+      "method",
+      "field_kind",
+      "source_id"
+    ],
+    "technical_checks_semantics": "passed may be supplied only when all applicable material, method, diameter, interface, length, dust and supply checks have verified matching evidence; missing or conflicting checks remain unknown. It does not assess the site."
+  },
+  "rules": [
+    {
+      "rule_id": "CDR-001",
+      "original_rule_id": "R01",
+      "category": "taxonomy",
+      "classification": "GREEN",
+      "confidence": "verified",
+      "automatic_execution": true,
+      "conditions": {
+        "any": [
+          {
+            "field": "candidate.tool_type",
+            "op": "in",
+            "value": [
+              "sds_plus",
+              "sds_max"
+            ]
+          },
+          {
+            "field": "candidate.interface",
+            "op": "in",
+            "value": [
+              "drill",
+              "hammer_drill",
+              "rotary_hammer"
+            ]
+          }
+        ]
+      },
+      "recommendation": {
+        "action": "request_metadata_correction",
+        "fields": [
+          "candidate.tool_type",
+          "candidate.interface"
+        ]
+      },
+      "reason": "Mechanism and interface are separate dimensions.",
+      "limitations": [
+        "Does not infer mechanism from a marketing title or assign missing tool properties."
+      ],
+      "sources": [
+        "S01",
+        "S15"
+      ]
+    },
+    {
+      "rule_id": "CDR-002",
+      "original_rule_id": "R02",
+      "category": "tool_selection",
+      "classification": "YELLOW",
+      "confidence": "conditional",
+      "automatic_execution": false,
+      "conditions": null,
+      "recommendation": null,
+      "reason": "No-impact drill is not a default concrete hammer-drilling option in the verified evidence.",
+      "limitations": [
+        "Editorial policy, not a universal impossibility claim; no complete pure-rotation system verified."
+      ],
+      "sources": [
+        "S03"
+      ]
+    },
+    {
+      "rule_id": "CDR-003",
+      "original_rule_id": "R03",
+      "category": "tool_selection",
+      "classification": "YELLOW",
+      "confidence": "conditional",
+      "automatic_execution": false,
+      "conditions": null,
+      "recommendation": null,
+      "reason": "Some hammer drills explicitly support concrete; complete product and bit evidence is still necessary.",
+      "limitations": [
+        "HP2010N 20 mm is one model's capacity, not a category threshold or performance guarantee.",
+        "No complete hammer-drill dust system was added."
+      ],
+      "sources": [
+        "S02",
+        "S14"
+      ]
+    },
+    {
+      "rule_id": "CDR-004",
+      "original_rule_id": "R04",
+      "category": "tool_selection",
+      "classification": "YELLOW",
+      "confidence": "conditional",
+      "automatic_execution": false,
+      "conditions": null,
+      "recommendation": null,
+      "reason": "Rotary hammers are relevant concrete candidates; material alone does not determine the best tool.",
+      "limitations": [
+        "Does not convert concrete into an unconditional rotary-hammer recommendation."
+      ],
+      "sources": [
+        "S01",
+        "S02"
+      ]
+    },
+    {
+      "rule_id": "CDR-005",
+      "original_rule_id": "R05",
+      "category": "capability_validation",
+      "classification": "GREEN",
+      "confidence": "verified",
+      "automatic_execution": true,
+      "conditions": {
+        "all": [
+          {
+            "all": [
+              {
+                "field": "evidence.state",
+                "op": "eq",
+                "value": "verified"
+              },
+              {
+                "field": "evidence.scope_matches",
+                "op": "eq",
+                "value": true
+              },
+              {
+                "field": "evidence.has_conflict",
+                "op": "eq",
+                "value": false
+              }
+            ]
+          },
+          {
+            "field": "candidate.capacity.kind",
+            "op": "eq",
+            "value": "ordinary_hammer_bit_diameter_range"
+          },
+          {
+            "field": "candidate.capacity.material",
+            "op": "eq",
+            "value_from": "job.material"
+          },
+          {
+            "field": "candidate.capacity.method",
+            "op": "eq",
+            "value_from": "job.drilling_method"
+          },
+          {
+            "any": [
+              {
+                "field": "job.hole_diameter_mm",
+                "op": "lt",
+                "value_from": "candidate.capacity.min_mm"
+              },
+              {
+                "field": "job.hole_diameter_mm",
+                "op": "gt",
+                "value_from": "candidate.capacity.max_mm"
+              }
+            ]
+          }
+        ]
+      },
+      "recommendation": {
+        "action": "exclude_combination",
+        "code": "outside_scoped_tool_capacity"
+      },
+      "reason": "A diameter outside an explicit, matching model/material/method range cannot pass that capability check.",
+      "limitations": [
+        "Never uses optimum, core, ambiguous masonry or cross-region fields as this range.",
+        "Not being excluded is not positive suitability approval."
+      ],
+      "sources": [
+        "S08",
+        "N01"
+      ]
+    },
+    {
+      "rule_id": "CDR-006",
+      "original_rule_id": "R06",
+      "category": "optimum_range",
+      "classification": "YELLOW",
+      "confidence": "conditional",
+      "automatic_execution": false,
+      "conditions": null,
+      "recommendation": null,
+      "reason": "An optimum range can explain a model's intended fit; maximum capacity and optimum are different fields.",
+      "limitations": [
+        "No automatic score, ranking or exclusion based on optimum range."
+      ],
+      "sources": [
+        "S04",
+        "S06"
+      ]
+    },
+    {
+      "rule_id": "CDR-007",
+      "original_rule_id": "R07",
+      "category": "interface_validation",
+      "classification": "GREEN",
+      "confidence": "verified",
+      "automatic_execution": true,
+      "conditions": {
+        "all": [
+          {
+            "all": [
+              {
+                "field": "evidence.state",
+                "op": "eq",
+                "value": "verified"
+              },
+              {
+                "field": "evidence.scope_matches",
+                "op": "eq",
+                "value": true
+              },
+              {
+                "field": "evidence.has_conflict",
+                "op": "eq",
+                "value": false
+              }
+            ]
+          },
+          {
+            "field": "candidate.tool_interface",
+            "op": "ne",
+            "value_from": "candidate.bit_interface"
+          }
+        ]
+      },
+      "recommendation": {
+        "action": "withhold_combination",
+        "code": "native_interface_mismatch",
+        "next_step": "verify_manufacturer_approved_adapter_system"
+      },
+      "reason": "Native interface mismatch requires a separately approved adapter configuration.",
+      "limitations": [
+        "V0.1 does not automatically support adapters or claim that every adapter is prohibited.",
+        "Interface equality alone cannot certify material, mode or dimensions."
+      ],
+      "sources": [
+        "S15",
+        "N02",
+        "N10"
+      ]
+    },
+    {
+      "rule_id": "CDR-008",
+      "original_rule_id": "R08",
+      "category": "alternative_explanation",
+      "classification": "YELLOW",
+      "confidence": "conditional",
+      "automatic_execution": false,
+      "conditions": null,
+      "recommendation": null,
+      "reason": "Specific SDS-Plus and SDS-Max optimum ranges overlap; interface alone cannot choose a winner.",
+      "limitations": [
+        "Examples are model comparisons, not universal class boundaries or automatic ranking."
+      ],
+      "sources": [
+        "S07",
+        "S08"
+      ]
+    },
+    {
+      "rule_id": "CDR-009",
+      "original_rule_id": "R09",
+      "category": "method_routing",
+      "classification": "GREEN",
+      "confidence": "verified",
+      "automatic_execution": true,
+      "conditions": {
+        "field": "job.drilling_method",
+        "op": "in",
+        "value": [
+          "breakthrough_bit",
+          "percussion_core",
+          "diamond_core"
+        ]
+      },
+      "recommendation": {
+        "action": "outside_selector_scope",
+        "code": "special_drilling_method",
+        "next_step": "verify_specific_manufacturer_system"
+      },
+      "reason": "Published capacities distinguish bit/method families; V0.1 ordinary hammer-bit checks cannot validate special methods.",
+      "limitations": [
+        "A through-hole made with an ordinary solid bit is not automatically a breakthrough-bit method.",
+        "Unknown method must be clarified rather than inferred."
+      ],
+      "sources": [
+        "S08"
+      ]
+    },
+    {
+      "rule_id": "CDR-010",
+      "original_rule_id": "R10",
+      "category": "length_validation",
+      "classification": "GREEN",
+      "confidence": "verified",
+      "automatic_execution": true,
+      "conditions": {
+        "all": [
+          {
+            "all": [
+              {
+                "field": "evidence.state",
+                "op": "eq",
+                "value": "verified"
+              },
+              {
+                "field": "evidence.scope_matches",
+                "op": "eq",
+                "value": true
+              },
+              {
+                "field": "evidence.has_conflict",
+                "op": "eq",
+                "value": false
+              }
+            ]
+          },
+          {
+            "any": [
+              {
+                "field": "job.hole_depth_mm",
+                "op": "gt",
+                "value_from": "candidate.bit_working_length_mm"
+              },
+              {
+                "field": "job.hole_depth_mm",
+                "op": "gt",
+                "value_from": "candidate.dust_max_depth_mm"
+              },
+              {
+                "field": "candidate.bit_total_length_mm",
+                "op": "gt",
+                "value_from": "candidate.dust_max_bit_length_mm"
+              }
+            ]
+          }
+        ]
+      },
+      "recommendation": {
+        "action": "exclude_combination",
+        "code": "exceeds_verified_length_limit"
+      },
+      "reason": "A documented working-length or attachment limit is a necessary constraint.",
+      "limitations": [
+        "Each compared limit must be verified for the exact configuration.",
+        "An unknown limit cannot be filled from total length; unknown comparisons cannot pass.",
+        "No universal extra depth allowance or interface-upgrade threshold."
+      ],
+      "sources": [
+        "S03",
+        "N04",
+        "N10"
+      ]
+    },
+    {
+      "rule_id": "CDR-011",
+      "original_rule_id": "R11",
+      "category": "workload_explanation",
+      "classification": "YELLOW",
+      "confidence": "conditional",
+      "automatic_execution": false,
+      "conditions": null,
+      "recommendation": null,
+      "reason": "Hole count describes workload. A runtime claim belongs to its published dimensions, battery and test conditions.",
+      "limitations": [
+        "No guaranteed runtime, hole-volume extrapolation, duty-cycle or hole-count threshold."
+      ],
+      "sources": [
+        "S12"
+      ]
+    },
+    {
+      "rule_id": "CDR-012",
+      "original_rule_id": "R12",
+      "category": "power_preference",
+      "classification": "GREEN",
+      "confidence": "verified",
+      "automatic_execution": true,
+      "conditions": {
+        "all": [
+          {
+            "all": [
+              {
+                "field": "evidence.state",
+                "op": "eq",
+                "value": "verified"
+              },
+              {
+                "field": "evidence.scope_matches",
+                "op": "eq",
+                "value": true
+              },
+              {
+                "field": "evidence.has_conflict",
+                "op": "eq",
+                "value": false
+              }
+            ]
+          },
+          {
+            "field": "candidate.technical_checks",
+            "op": "eq",
+            "value": "passed"
+          },
+          {
+            "field": "job.power_preference",
+            "op": "in",
+            "value": [
+              "corded",
+              "cordless"
+            ]
+          },
+          {
+            "field": "candidate.power_source",
+            "op": "in",
+            "value": [
+              "corded",
+              "cordless"
+            ]
+          },
+          {
+            "field": "job.power_preference",
+            "op": "ne",
+            "value_from": "candidate.power_source"
+          }
+        ]
+      },
+      "recommendation": {
+        "action": "exclude_by_user_preference",
+        "code": "power_preference_mismatch"
+      },
+      "reason": "Power preference filters technically checked candidates; it does not establish engineering capability.",
+      "limitations": [
+        "This filtering is an explicit product policy, supported by evidence that cordless SDS-Max exists.",
+        "No preference retains both; an empty result asks for verification rather than changing the preference."
+      ],
+      "sources": [
+        "S13"
+      ]
+    },
+    {
+      "rule_id": "CDR-013",
+      "original_rule_id": "R13",
+      "category": "anchor_design",
+      "classification": "RED",
+      "confidence": "insufficient",
+      "automatic_execution": false,
+      "conditions": null,
+      "recommendation": null,
+      "reason": "Anchor diameter, depth, installation and cleaning require the current selected anchor system instructions.",
+      "limitations": [
+        "No anchor design, load rating, embedment calculation or generic cleaning count.",
+        "Dust capture does not establish permission to omit anchor-hole cleaning."
+      ],
+      "sources": [
+        "S17"
+      ]
+    },
+    {
+      "rule_id": "CDR-014",
+      "original_rule_id": "R14",
+      "category": "site_safety",
+      "classification": "RED",
+      "confidence": "insufficient",
+      "automatic_execution": false,
+      "conditions": null,
+      "recommendation": null,
+      "reason": "Utilities, reinforcement, prestressing and unknown obstructions require site verification or engineering judgement.",
+      "limitations": [
+        "No automatic declaration that a location is safe or that reinforcement may be cut.",
+        "Human content must require stopping at an unknown obstruction; old guide is not a current approval."
+      ],
+      "sources": [
+        "S10",
+        "S18"
+      ]
+    },
+    {
+      "rule_id": "CDR-015",
+      "original_rule_id": "R15",
+      "category": "dust_and_handling",
+      "classification": "YELLOW",
+      "confidence": "conditional",
+      "automatic_execution": false,
+      "conditions": null,
+      "recommendation": null,
+      "reason": "Dust collection and gripping requirements belong to the verified tool/accessory system.",
+      "limitations": [
+        "No automatic respiratory protection decision or country-wide compliance statement.",
+        "HEPA, extractor class, capture rate and exposure are distinct; filter condition and setup matter."
+      ],
+      "sources": [
+        "S10",
+        "S11",
+        "N04",
+        "N13"
+      ]
+    },
+    {
+      "rule_id": "CDR-016",
+      "original_rule_id": "R16",
+      "category": "material_confirmation",
+      "classification": "GREEN",
+      "confidence": "verified",
+      "automatic_execution": true,
+      "conditions": {
+        "any": [
+          {
+            "field": "job.material",
+            "op": "is_null",
+            "value": null
+          },
+          {
+            "field": "job.material",
+            "op": "eq",
+            "value": "unknown"
+          }
+        ]
+      },
+      "recommendation": {
+        "action": "request_information",
+        "fields": [
+          "job.material"
+        ],
+        "code": "material_not_confirmed"
+      },
+      "reason": "Material-specific instructions cannot be applied while the material is unknown.",
+      "limitations": [
+        "Scope policy supported by the manufacturer's material/mode distinctions.",
+        "Known non-concrete materials remain outside this job; no material identification is inferred."
+      ],
+      "sources": [
+        "S03"
+      ]
+    },
+    {
+      "rule_id": "CDR-017",
+      "original_rule_id": "R17",
+      "category": "universal_diameter_threshold",
+      "classification": "RED",
+      "confidence": "insufficient",
+      "automatic_execution": false,
+      "conditions": null,
+      "recommendation": null,
+      "reason": "No universal Drill/Hammer Drill/SDS-Plus/SDS-Max crossover is established; official examples contradict rigid class boundaries.",
+      "limitations": [
+        "All universal numeric crossover fields remain absent."
+      ],
+      "sources": [
+        "S07",
+        "S08",
+        "S14"
+      ]
+    },
+    {
+      "rule_id": "CDR-018",
+      "original_rule_id": "R18",
+      "category": "universal_workload_threshold",
+      "classification": "RED",
+      "confidence": "insufficient",
+      "automatic_execution": false,
+      "conditions": null,
+      "recommendation": null,
+      "reason": "No universal depth, hole-count or aspect-ratio upgrade threshold was established.",
+      "limitations": [
+        "Model-specific attachment limits are constraints, not universal tool upgrades."
+      ],
+      "sources": [
+        "S12",
+        "N04"
+      ]
+    },
+    {
+      "rule_id": "CDR-019",
+      "original_rule_id": "R19",
+      "category": "performance_formula",
+      "classification": "RED",
+      "confidence": "insufficient",
+      "automatic_execution": false,
+      "conditions": null,
+      "recommendation": null,
+      "reason": "No validated formula converts W, V, Ah, BPM or J into universal hole diameter or drilling time.",
+      "limitations": [
+        "Published battery compatibility requirements remain configuration-specific; they are not a performance formula."
+      ],
+      "sources": [
+        "S12",
+        "S13",
+        "N04"
+      ]
+    },
+    {
+      "rule_id": "CDR-020",
+      "original_rule_id": "R20",
+      "category": "conflicting_capability",
+      "classification": "RED",
+      "confidence": "insufficient",
+      "automatic_execution": false,
+      "conditions": null,
+      "recommendation": null,
+      "reason": "Ambiguous fields, regions, generations and drilling methods cannot be merged into a maximum-capacity answer.",
+      "limitations": [
+        "Keep conflicting observations with their scopes; effective disputed values remain null.",
+        "Do not select whichever published value is larger, smaller or more convenient."
+      ],
+      "sources": [
+        "S09",
+        "S10",
+        "N07",
+        "N08"
+      ]
+    }
+  ],
+  "system_chains": [
+    {
+      "chain_id": "A",
+      "research_case": "Light Concrete Drilling",
+      "case_is_numeric_threshold": false,
+      "manufacturer": "Bosch",
+      "region": "UK",
+      "confidence": "conditional",
+      "connection_evidence": "verified",
+      "automatic_recommendation_enabled": false,
+      "components": {
+        "tool": {
+          "model": "GBH 18V-22",
+          "interface": "sds_plus",
+          "power_source": "cordless",
+          "source": "N01"
+        },
+        "bit": {
+          "model": "EXPERT SDS plus-7X",
+          "sku": "2608900072",
+          "interface": "sds_plus",
+          "selected_sku_observation": {
+            "diameter_mm": 6,
+            "working_length_mm": 100,
+            "total_length_mm": 165
+          },
+          "effective_geometry": null,
+          "source": "N02",
+          "conflict": "CF-02"
+        },
+        "dust": {
+          "model": "GDE 18V-12",
+          "sales_order": "1600A028H6",
+          "service_part_number": "1600A028H8",
+          "external_vacuum_required": false,
+          "filter": "Intact specified HEPA filter and dust box",
+          "sources": [
+            "N03",
+            "N04"
+          ]
+        },
+        "power": {
+          "battery": "GBA 18V 4.0Ah",
+          "battery_sku": "1600Z00038",
+          "charger": "GAL 18V-40",
+          "charger_sku": "1600A019RK",
+          "compatibility_package": "0611924072",
+          "source": "N01"
+        }
+      },
+      "scoped_facts": [
+        {
+          "subject": "tool",
+          "method": "ordinary_hammer_bit",
+          "material": "concrete",
+          "capacity_mm": [
+            4,
+            22
+          ],
+          "optimum_mm": [
+            4,
+            12
+          ],
+          "source": "N01"
+        },
+        {
+          "subject": "dust",
+          "diameter_mm": [
+            4,
+            12
+          ],
+          "max_bit_total_length_mm": 165,
+          "max_drilling_depth_mm": 100,
+          "battery_capacity_requirement": {
+            "op": "gt",
+            "value": 3,
+            "unit": "Ah"
+          },
+          "source": "N04"
+        }
+      ],
+      "connections": [
+        {
+          "edge": "tool_to_bit",
+          "basis": "Native SDS-Plus plus listed concrete use; not a manufacturer SKU-by-SKU system certification.",
+          "sources": [
+            "N01",
+            "N02"
+          ]
+        },
+        {
+          "edge": "tool_to_dust",
+          "basis": "Explicit model listing and official bundle 0611924004.",
+          "sources": [
+            "N01",
+            "N03",
+            "N04"
+          ]
+        },
+        {
+          "edge": "power_to_system",
+          "basis": "Official 4.0Ah tool package exceeds the attachment's >3.0Ah requirement.",
+          "sources": [
+            "N01",
+            "N04"
+          ]
+        }
+      ],
+      "application": "Ordinary concrete hammer drilling; SKU dimensions are a research observation, not assumed user dimensions.",
+      "limitations": [
+        "Selected SKU text and image metadata disagree; geometry is withheld from automatic use pending confirmation.",
+        "Separate packages prove compatibility, not that one box contains every component.",
+        "Metal drilling prohibition is not overridden by reinforced-concrete bit marketing.",
+        "No workload, runtime, anchor cleaning or exposure-compliance guarantee."
+      ]
+    },
+    {
+      "chain_id": "B",
+      "research_case": "Medium Anchor Hole Drilling",
+      "case_is_numeric_threshold": false,
+      "manufacturer": "Hilti",
+      "region": "UK",
+      "confidence": "conditional",
+      "connection_evidence": "conditional",
+      "automatic_recommendation_enabled": false,
+      "components": {
+        "tool": {
+          "model": "TE 6-22 (05)",
+          "sku": "2253058",
+          "interface": "sds_plus",
+          "power_source": "cordless",
+          "source": "N05"
+        },
+        "bit": {
+          "model": "TE-CX 10/17 MP16",
+          "sku": "2022035",
+          "interface": "sds_plus",
+          "diameter_mm": null,
+          "working_length_mm": null,
+          "total_length_mm": null,
+          "source": "N06"
+        },
+        "dust": {
+          "model": "TE DRS-4/6 (01) ROW",
+          "sku": "2268002",
+          "external_vacuum_required": false,
+          "filter_configuration": null,
+          "sources": [
+            "N07",
+            "N08"
+          ]
+        },
+        "power": {
+          "battery": "B 22-85 Li-ion",
+          "charger": "C 4-22 (02) 220–240V",
+          "compatibility_package": "2486910",
+          "sources": [
+            "N08",
+            "N09"
+          ]
+        }
+      },
+      "scoped_facts": [
+        {
+          "subject": "tool",
+          "method": "ordinary_hammer_bit",
+          "material": "concrete",
+          "capacity_mm": [
+            4,
+            28
+          ],
+          "optimum_mm": [
+            4,
+            16
+          ],
+          "source": "N05"
+        },
+        {
+          "subject": "dust_product_page",
+          "diameter_mm": [
+            4,
+            20
+          ],
+          "generic_max_depth_mm": 110,
+          "source": "N07"
+        },
+        {
+          "subject": "manual_specific_combinations",
+          "observations": [
+            {
+              "tool": "TE 6-22 (05)",
+              "bit_family": "TE-CX XX/17",
+              "max_depth_mm": 80
+            },
+            {
+              "tool": "TE 6-22 (05)",
+              "bit_family": "TE-CX XX/15",
+              "max_depth_mm": 60
+            },
+            {
+              "tool": "TE 4-22 (03)",
+              "bit_family": "TE-CX XX/22",
+              "max_depth_mm": 110
+            }
+          ],
+          "source": "N08"
+        }
+      ],
+      "effective_system_max_depth_mm": null,
+      "connections": [
+        {
+          "edge": "tool_to_bit_family",
+          "basis": "TE-C/SDS-Plus and concrete hammer drilling; exact selected SKU geometry not established.",
+          "sources": [
+            "N05",
+            "N06"
+          ]
+        },
+        {
+          "edge": "tool_to_dust",
+          "basis": "Explicit compatibility with TE 6-22 (05); fan uses host battery.",
+          "sources": [
+            "N07",
+            "N08"
+          ]
+        },
+        {
+          "edge": "power_to_tool",
+          "basis": "Official UK package lists this tool, battery and charger.",
+          "sources": [
+            "N09"
+          ]
+        }
+      ],
+      "application": "Installation-hole research example only; no selected anchor or approved anchor-hole specification.",
+      "limitations": [
+        "Not a fully verified fixed-SKU system; geometry and ROW filter configuration remain open.",
+        "110 mm generic page rating is not assigned to TE 6-22 plus XX/17.",
+        "No structural anchor design, cleaning exemption or legal dust compliance."
+      ]
+    },
+    {
+      "chain_id": "C",
+      "research_case": "Heavier Concrete Drilling",
+      "case_is_numeric_threshold": false,
+      "manufacturer": "Bosch",
+      "region": "UK",
+      "confidence": "conditional",
+      "connection_evidence": "verified",
+      "automatic_recommendation_enabled": false,
+      "components": {
+        "tool": {
+          "model": "GBH 5-40 DCE",
+          "sku": "0611264060",
+          "voltage_v": 110,
+          "interface": "sds_max",
+          "power_source": "corded",
+          "source": "S08"
+        },
+        "bit": {
+          "model": "EXPERT SDS max-8X",
+          "sku": "2608900228",
+          "interface": "sds_max",
+          "diameter_mm": 20,
+          "working_length_mm": 200,
+          "total_length_mm": 320,
+          "source": "N10"
+        },
+        "dust_attachment": {
+          "model": "GDE 68",
+          "sku": "1600A001G7",
+          "external_vacuum_required": true,
+          "source": "N11"
+        },
+        "vacuum": {
+          "model": "GAS 35 M AFC",
+          "sku": "06019C3170",
+          "voltage_v": 110,
+          "dust_class": "M",
+          "hose_and_adapter_sku": "2608000566",
+          "filter_sku": "2607432034",
+          "filter_type": "PES flat-pleated",
+          "disposal_bag_sku": "2607432043",
+          "source": "N12"
+        }
+      },
+      "scoped_facts": [
+        {
+          "subject": "tool",
+          "method": "ordinary_hammer_bit",
+          "material": "concrete",
+          "capacity_mm": [
+            12,
+            40
+          ],
+          "optimum_mm": [
+            18,
+            32
+          ],
+          "source": "S08"
+        },
+        {
+          "subject": "dust_attachment",
+          "max_diameter_mm": 68,
+          "max_drilling_depth_mm": null,
+          "source": "N11"
+        }
+      ],
+      "effective_system_max_depth_mm": null,
+      "connections": [
+        {
+          "edge": "tool_to_bit",
+          "basis": "Native SDS-Max and published concrete capability; chosen SKU diameter lies in the published range. Specification intersection, not a per-SKU certification.",
+          "sources": [
+            "S08",
+            "N10"
+          ]
+        },
+        {
+          "edge": "tool_to_dust_attachment",
+          "basis": "GDE 68 explicitly supports all drilling tools and concrete wall drilling.",
+          "sources": [
+            "N11",
+            "N13"
+          ]
+        },
+        {
+          "edge": "attachment_to_vacuum",
+          "basis": "Both identify Bosch Click & Clean; vacuum supplies its matching hose and tool adapter.",
+          "sources": [
+            "N11",
+            "N12"
+          ]
+        }
+      ],
+      "application": "Ordinary concrete wall drilling with a vacuum-held dust guard; 20 mm is the observed SKU, not the definition of heavier work.",
+      "limitations": [
+        "Wall suction/seal and the current GDE 68 instructions must be checked at the site; no universal surface or posture approval.",
+        "200 mm working length is not a verified 200 mm system depth; attachment depth is unknown.",
+        "Use the named 110V variant and suitable site supply; no tool-through-vacuum socket/load approval inferred.",
+        "68 mm dust opening does not expand the hammer's ordinary-bit capacity.",
+        "No rebar cutting, duty-cycle, anchor or exposure-compliance approval."
+      ]
+    }
+  ],
+  "conflicts": [
+    {
+      "conflict_id": "CF-01",
+      "subject": "Hilti TE 60 capacity fields",
+      "observations": [
+        {
+          "source": "S09",
+          "scope": "UK general / optimum / application",
+          "values_mm": [
+            [
+              12,
+              100
+            ],
+            [
+              18,
+              40
+            ],
+            [
+              18,
+              80
+            ]
+          ]
+        },
+        {
+          "source": "S10",
+          "scope": "Generation 04 manual, 230V basis; ordinary / breakthrough / percussion core",
+          "values_mm": [
+            [
+              12,
+              55
+            ],
+            [
+              40,
+              80
+            ],
+            [
+              45,
+              100
+            ]
+          ]
+        }
+      ],
+      "effective_unified_value": null,
+      "resolution": "Different fields and market scopes retained; no merged ordinary-bit capacity."
+    },
+    {
+      "conflict_id": "CF-02",
+      "subject": "Bosch 2608900072 selected text versus image metadata",
+      "observations": [
+        {
+          "source": "N02",
+          "scope": "Selected SKU text",
+          "geometry_mm": [
+            6,
+            100,
+            165
+          ]
+        },
+        {
+          "source": "N02",
+          "scope": "Image alt metadata",
+          "diameter_mm": 12,
+          "other_family_label": "SDS plus-5X"
+        }
+      ],
+      "effective_unified_value": null,
+      "resolution": "No winning number chosen. Text observation retained, automatic geometry withheld; confirm SKU against manufacturer packaging/datasheet."
+    },
+    {
+      "conflict_id": "CF-03",
+      "subject": "Hilti TE DRS-4/6 depth scope",
+      "observations": [
+        {
+          "source": "N07",
+          "scope": "Generic product maximum",
+          "depth_mm": 110
+        },
+        {
+          "source": "N08",
+          "scope": "TE 6-22 + TE-CX XX/17",
+          "depth_mm": 80
+        }
+      ],
+      "effective_unified_value": null,
+      "resolution": "Do not collapse generic and combination-specific fields; fixed-SKU system depth remains unapproved."
+    },
+    {
+      "conflict_id": "CF-04",
+      "subject": "Hilti #2268002 ROW filter wording",
+      "observations": [
+        {
+          "source": "N07",
+          "label": "M-Class dust filter"
+        },
+        {
+          "source": "N07",
+          "label": "HEPA filter included as standard"
+        }
+      ],
+      "effective_unified_value": null,
+      "resolution": "Distinct labels may concern different properties; exact supplied configuration and class not resolved."
+    },
+    {
+      "conflict_id": "CF-05",
+      "subject": "Bosch GDE 18V-12 identifiers",
+      "observations": [
+        {
+          "source": "N03",
+          "scope": "Sales order",
+          "value": "1600A028H6"
+        },
+        {
+          "source": "N03",
+          "scope": "Service/part field",
+          "value": "1600A028H8"
+        }
+      ],
+      "effective_unified_value": null,
+      "resolution": "Keep both in separate fields; no substitution or claim of identical identifiers."
+    },
+    {
+      "conflict_id": "CF-06",
+      "subject": "Bosch supply and power fields",
+      "observations": [
+        {
+          "source": "S07",
+          "scope": "Package / technical voltage",
+          "values_v": [
+            240,
+            230
+          ]
+        },
+        {
+          "source": "N12",
+          "scope": "Distinct package variants",
+          "variants": [
+            {
+              "sku": "06019C3160",
+              "voltage_v": 240
+            },
+            {
+              "sku": "06019C3170",
+              "voltage_v": 110
+            }
+          ]
+        },
+        {
+          "source": "N12",
+          "scope": "Rated input / marketing turbine power",
+          "values_w": [
+            1200,
+            1380
+          ]
+        }
+      ],
+      "effective_unified_value": null,
+      "resolution": "Do not merge package variants or unlike power fields; Case C identifies the 110V package only."
+    }
+  ],
+  "evidence_gaps": [
+    {
+      "gap_id": "EG-01",
+      "scope": "A",
+      "missing": "Independent confirmation of selected bit geometry after image-metadata discrepancy.",
+      "effect": "No automatic fixed-SKU dimensional recommendation."
+    },
+    {
+      "gap_id": "EG-02",
+      "scope": "B",
+      "missing": "Current UK SKU dimension tuple and ROW filter configuration.",
+      "effect": "Third chain remains conditional; no fixed-SKU approval."
+    },
+    {
+      "gap_id": "EG-03",
+      "scope": "C",
+      "missing": "System maximum depth, site wall seal and installation-specific electrical connection.",
+      "effect": "No 200 mm depth or site-operation guarantee."
+    },
+    {
+      "gap_id": "EG-04",
+      "scope": "All",
+      "missing": "Selected anchor's current IFU and engineering/site confirmation.",
+      "effect": "No anchor size, depth, load, cleaning or rebar-cutting decisions."
+    },
+    {
+      "gap_id": "EG-05",
+      "scope": "All",
+      "missing": "Complete workload tests and local exposure-control assessment.",
+      "effect": "No universal runtime, hole count, duty-cycle or compliance claims."
+    },
+    {
+      "gap_id": "EG-06",
+      "scope": "Hammer Drill",
+      "missing": "Complete tool/bit/dust chain within this limited supplement.",
+      "effect": "Keep explanatory candidacy; neither automatically recommend nor categorically exclude the class."
+    }
+  ],
+  "source_registry": [
+    {
+      "source_id": "S01",
+      "manufacturer": "Bosch DIY",
+      "authority": null,
+      "title": "Bosch DIY｜Not sure which drill you need?",
+      "url": "https://www.bosch-diy.com/gb/en/all-about-diy/types-of-drills",
+      "access_date": "2026-09-04",
+      "document_date": null,
+      "applicable_scope": "UK；品类教育",
+      "locator": "全文；分类章节",
+      "relevant_statement": "Tool mechanism, operating mode and accessory interface are distinct; regional naming varies.",
+      "new_this_round": false,
+      "verification_limit": null
+    },
+    {
+      "source_id": "S02",
+      "manufacturer": "Makita Canada",
+      "authority": null,
+      "title": "Makita Canada｜Frequently asked questions",
+      "url": "https://www.makita.ca/index2new.php?event=faq-frequently-asked-questions",
+      "access_date": "2026-09-04",
+      "document_date": null,
+      "applicable_scope": "加拿大；品类FAQ",
+      "locator": "全文；混凝土钻孔问答",
+      "relevant_statement": "Hammer drills and rotary hammers have different concrete applications; no universal numeric boundary stated.",
+      "new_this_round": false,
+      "verification_limit": null
+    },
+    {
+      "source_id": "S03",
+      "manufacturer": "Bosch",
+      "authority": null,
+      "title": "Bosch Professional｜CYL-3 Drill Bit",
+      "url": "https://www.bosch-professional.com/gb/en/cyl-3-concrete-drill-bits-2868161-ocs-ac/",
+      "access_date": "2026-09-04",
+      "document_date": null,
+      "applicable_scope": "UK；钻头及共用技术FAQ",
+      "locator": "全文；材料/模式FAQ、规格",
+      "relevant_statement": "Concrete use calls for impact mode in the FAQ; working length and total length are separate fields.",
+      "new_this_round": false,
+      "verification_limit": null
+    },
+    {
+      "source_id": "S04",
+      "manufacturer": "Hilti",
+      "authority": null,
+      "title": "Hilti｜TE 2 Rotary hammer",
+      "url": "https://www.hilti.co.uk/c/CLS_POWER_TOOLS_7125/CLS_ROTARY_HAMMERS_7125/r3682",
+      "access_date": "2026-09-04",
+      "document_date": null,
+      "applicable_scope": "UK；TE 2",
+      "locator": "全文；Technical Data",
+      "relevant_statement": "TE 2: hammer range 4–22 mm; optimum 4–14 mm.",
+      "new_this_round": false,
+      "verification_limit": null
+    },
+    {
+      "source_id": "S05",
+      "manufacturer": "Hilti",
+      "authority": null,
+      "title": "Hilti｜TE 30-AVR Rotary hammer",
+      "url": "https://www.hilti.co.uk/c/CLS_POWER_TOOLS_7125/CLS_ROTARY_HAMMERS_7125/r6848759",
+      "access_date": "2026-09-04",
+      "document_date": null,
+      "applicable_scope": "UK；所选110V套装#2160045",
+      "locator": "全文；Technical Data",
+      "relevant_statement": "TE 30-AVR: hammer range 5–28 mm; optimum 10–28 mm.",
+      "new_this_round": false,
+      "verification_limit": null
+    },
+    {
+      "source_id": "S06",
+      "manufacturer": "Bosch",
+      "authority": null,
+      "title": "Bosch｜PRO GBH 2-28 F",
+      "url": "https://www.bosch-professional.com/gb/en/products/gbh-2-28-f-0611267661",
+      "access_date": "2026-09-04",
+      "document_date": null,
+      "applicable_scope": "UK；订单0611267661；110V",
+      "locator": "全文；Drilling range",
+      "relevant_statement": "GBH 2-28 F: concrete hammer bits 4–28 mm; optimum 8–16 mm.",
+      "new_this_round": false,
+      "verification_limit": null
+    },
+    {
+      "source_id": "S07",
+      "manufacturer": "Bosch",
+      "authority": null,
+      "title": "Bosch｜PRO GBH 4-32 DFR",
+      "url": "https://www.bosch-professional.com/gb/en/products/gbh-4-32-dfr-0611332171",
+      "access_date": "2026-09-04",
+      "document_date": null,
+      "applicable_scope": "UK；订单0611332171；套装240V、技术字段230V",
+      "locator": "全文；Drilling range",
+      "relevant_statement": "GBH 4-32 DFR: concrete hammer bits 6–32 mm; optimum 14–25 mm.",
+      "new_this_round": false,
+      "verification_limit": null
+    },
+    {
+      "source_id": "S08",
+      "manufacturer": "Bosch",
+      "authority": null,
+      "title": "Bosch｜PRO GBH 5-40 DCE",
+      "url": "https://www.bosch-professional.com/gb/en/products/gbh-5-40-dce-0611264060",
+      "access_date": "2026-09-04",
+      "document_date": null,
+      "applicable_scope": "UK；订单0611264060；110V",
+      "locator": "全文；Drilling range",
+      "relevant_statement": "GBH 5-40 DCE: hammer bits 12–40 mm, optimum 18–32 mm; breakthrough 45–55 mm; core cutters 40–90 mm.",
+      "new_this_round": false,
+      "verification_limit": null
+    },
+    {
+      "source_id": "S09",
+      "manufacturer": "Hilti",
+      "authority": null,
+      "title": "Hilti｜TE 60-ATC-AVR Rotary hammer",
+      "url": "https://www.hilti.co.uk/c/CLS_POWER_TOOLS_7125/CLS_ROTARY_HAMMERS_7125/r5731031",
+      "access_date": "2026-09-04",
+      "document_date": null,
+      "applicable_scope": "UK；第4代",
+      "locator": "全文；技术字段与Applications存在口径差异",
+      "relevant_statement": "TE 60 UK general range 12–100 mm, optimum 18–40 mm, application recommendation 18–80 mm: different scopes.",
+      "new_this_round": false,
+      "verification_limit": null
+    },
+    {
+      "source_id": "S10",
+      "manufacturer": "Hilti",
+      "authority": null,
+      "title": "Hilti｜Operating Instruction TE 60 (04), 2134964",
+      "url": "https://www.hilti.com.au/medias/sys_master/documents/h0f/h32/10131928743966/Operating-Instruction-TE-60-04-Operating-Instruction-PUB-5278010-000.pdf",
+      "access_date": "2026-09-04",
+      "document_date": "2024-07-10",
+      "applicable_scope": "澳洲托管；第4代；技术数据以230V为基准",
+      "locator": "PDF全文；英文p4、p7；未完成表格视觉核验",
+      "relevant_statement": "TE 60 generation 04 manual separates bit methods; also requires hidden-service checks, two-hand control and jam response.",
+      "new_this_round": false,
+      "verification_limit": "Text reviewed; tables not visually verified; numeric tables excluded from automatic data."
+    },
+    {
+      "source_id": "S11",
+      "manufacturer": "DEWALT",
+      "authority": null,
+      "title": "DEWALT｜DCH253/DCH273 Instruction Manual, NA516950",
+      "url": "https://www.dewalt.com/GLOBALBOM/QU/DCH273B/20/Instruction_Manual/EN/NA516950_DCH253_DCH273_T1_NA.pdf",
+      "access_date": "2026-09-04",
+      "document_date": null,
+      "applicable_scope": "北美；DCH253/DCH273；产品代次以对应铭牌核对",
+      "locator": "PDF全文；英文p7–10；未完成表格视觉核验",
+      "relevant_statement": "Maximum recommended masonry capacity is not optimum concrete capacity; manual covers safe bit changes, grip and drilling.",
+      "new_this_round": false,
+      "verification_limit": "Text reviewed; tables not visually verified; numeric tables excluded from automatic data."
+    },
+    {
+      "source_id": "S12",
+      "manufacturer": "Milwaukee",
+      "authority": null,
+      "title": "Milwaukee｜M18 FUEL 1-1/8 in SDS Plus Rotary Hammer 2915-20",
+      "url": "https://www.milwaukeetool.com/products/details/m18-fuel-1-1-8-sds-plus-rotary-hammer-w-one-key/2915-20",
+      "access_date": "2026-09-04",
+      "document_date": null,
+      "applicable_scope": "USA；2915-20；指定XC6.0电池",
+      "locator": "全文；运行时间声明",
+      "relevant_statement": "2915-20: up to 50 holes, 5/8 in × 3 in, with M18 HIGH OUTPUT XC6.0; not a guaranteed or transferable yield.",
+      "new_this_round": false,
+      "verification_limit": null
+    },
+    {
+      "source_id": "S13",
+      "manufacturer": "Milwaukee",
+      "authority": null,
+      "title": "Milwaukee｜M18 FUEL 1-9/16 in SDS Max Rotary Hammer 2717-20",
+      "url": "https://www.milwaukeetool.com/products/details/m18-fuel-1-9-16-sds-max-rotary-hammer/2717-20",
+      "access_date": "2026-09-04",
+      "document_date": null,
+      "applicable_scope": "USA；2717-20；18V",
+      "locator": "全文；产品说明",
+      "relevant_statement": "2717-20 is a cordless 18 V SDS-Max rotary hammer.",
+      "new_this_round": false,
+      "verification_limit": null
+    },
+    {
+      "source_id": "S14",
+      "manufacturer": "Makita NZ",
+      "authority": null,
+      "title": "Makita NZ｜HP2010N 20mm 2 Speed Hammer Drill",
+      "url": "https://www.makita.co.nz/products/model/HP2010N",
+      "access_date": "2026-09-04",
+      "document_date": null,
+      "applicable_scope": "新西兰；HP2010N；230V",
+      "locator": "全文；混凝土能力20mm、2.9kg",
+      "relevant_statement": "HP2010N hammer drill lists 20 mm concrete capacity, not a class-wide or optimum boundary.",
+      "new_this_round": false,
+      "verification_limit": null
+    },
+    {
+      "source_id": "S15",
+      "manufacturer": "Hilti",
+      "authority": null,
+      "title": "Hilti｜Spindle TE-Y-BFH #263359",
+      "url": "https://www.hilti.com/c/CLS_POWER_TOOLS_7125/CLS_TOOLS_7125/CLS_ACC_ROTARY_HAMMERS_7125/263359",
+      "access_date": "2026-09-04",
+      "document_date": null,
+      "applicable_scope": "USA；指定转接件",
+      "locator": "全文；TE-Y转TE-C产品信息",
+      "relevant_statement": "TE-Y-BFH #263359 is a manufacturer adapter from TE-Y tool holding to TE-C accessories; approval is configuration-specific.",
+      "new_this_round": false,
+      "verification_limit": null
+    },
+    {
+      "source_id": "S16",
+      "manufacturer": "Hilti",
+      "authority": null,
+      "title": "Hilti｜TE-CX (SDS Plus) Metric hammer drill bit",
+      "url": "https://www.hilti.com/c/CLS_POWER_TOOL_INSERT_7126/CLS_CONCRETE_MASONRY_DRILL_BITS_7126/r4429",
+      "access_date": "2026-09-04",
+      "document_date": null,
+      "applicable_scope": "USA；公制钻头系列",
+      "locator": "全文；材料、工作模式与接口；单品尺寸需另核对",
+      "relevant_statement": "TE-CX is SDS-Plus; concrete and hammer drilling are listed; series data do not establish an unspecified SKU's dimensions.",
+      "new_this_round": false,
+      "verification_limit": null
+    },
+    {
+      "source_id": "S17",
+      "manufacturer": "Hilti Singapore",
+      "authority": null,
+      "title": "Hilti Singapore｜SafeSet and Anchor Installation",
+      "url": "https://www.hilti.com.sg/content/hilti/A2/SG/en/products/bu-anchors/safeset-and-anchor-installations.html",
+      "access_date": "2026-09-04",
+      "document_date": null,
+      "applicable_scope": "新加坡；指定锚固系统方案",
+      "locator": "全文；自动清孔与roughening章节",
+      "relevant_statement": "SafeSet depends on the approved anchor, drilling and cleaning system; no universal permission to omit cleaning.",
+      "new_this_round": false,
+      "verification_limit": null
+    },
+    {
+      "source_id": "S18",
+      "manufacturer": "Hilti North America",
+      "authority": null,
+      "title": "Hilti North America｜Post-Installed Reinforcing Bar Guide",
+      "url": "https://files-ask.hilti.com/original/ci/cikbnwqsf1.pdf",
+      "access_date": "2026-09-04",
+      "document_date": "2015-08",
+      "applicable_scope": "北美；历史技术指南；仅用于稳定方法原理",
+      "locator": "PDF全文；p17；不作为现行结构设计/锚固审批依据",
+      "relevant_statement": "Historical guide p17 requires engineering consultation concerning existing reinforcement; not current design approval.",
+      "new_this_round": false,
+      "verification_limit": null
+    },
+    {
+      "source_id": "S19",
+      "manufacturer": null,
+      "authority": "OSHA",
+      "title": "OSHA｜29 CFR 1926.1153, Table 1 (vii)",
+      "url": "https://www.osha.gov/laws-regs/regulations/standardnumber/1926/1926.1153",
+      "access_date": "2026-09-04",
+      "document_date": null,
+      "applicable_scope": "美国建筑业职业暴露法规",
+      "locator": "官方搜索索引；直开失败；只作背景，法规实施前复核全文",
+      "relevant_statement": "Official regulatory entry retained as background only; original research could not read full current text.",
+      "new_this_round": false,
+      "verification_limit": "Official index only; excluded from executable evidence."
+    },
+    {
+      "source_id": "N01",
+      "manufacturer": "Bosch",
+      "title": "PRO GBH 18V-22",
+      "url": "https://www.bosch-professional.com/gb/en/products/gbh-18v-22-0611924000",
+      "access_date": "2026-09-04",
+      "document_date": null,
+      "applicable_scope": "UK; model and individually identified package variants",
+      "locator": "Technical data; variants",
+      "relevant_statement": "SDS-Plus; concrete 4–22 mm, optimum 4–12 mm. Variant 0611924004 includes GDE 18V-12; 0611924072 includes GBA 18V 4.0Ah and GAL 18V-40.",
+      "new_this_round": true,
+      "verification_limit": null
+    },
+    {
+      "source_id": "N02",
+      "manufacturer": "Bosch",
+      "title": "EXPERT SDS plus-7X Hammer Drill Bit, 2608900072",
+      "url": "https://www.bosch-professional.com/gb/en/expert-sds-plus-7x-hammer-drill-bit-2867204-ocs-ac/?sku=2608900072",
+      "access_date": "2026-09-04",
+      "document_date": null,
+      "applicable_scope": "UK; selected SKU text, separate from image metadata",
+      "locator": "Selected variant",
+      "relevant_statement": "SKU text: diameter 6 mm, working length 100 mm, total length 165 mm; SDS-Plus concrete bit. Image metadata differs; see CF-02.",
+      "new_this_round": true,
+      "verification_limit": null
+    },
+    {
+      "source_id": "N03",
+      "manufacturer": "Bosch",
+      "title": "PRO GDE 18V-12 Integrated Dust Extractor",
+      "url": "https://www.bosch-professional.com/gb/en/products/gde-12-gde-18v-12-1600A028H6",
+      "access_date": "2026-09-04",
+      "document_date": null,
+      "applicable_scope": "UK; sales order 1600A028H6",
+      "locator": "Compatibility; technical data",
+      "relevant_statement": "Compatible with GBH 18V-22; integrated dust collection for concrete; maximum depth 100 mm. Sales and service identifiers are different fields.",
+      "new_this_round": true,
+      "verification_limit": null
+    },
+    {
+      "source_id": "N04",
+      "manufacturer": "Bosch",
+      "title": "GDE 18V-12 / GDE 12 Original Instructions, 1 609 92A B73",
+      "url": "https://www.bosch-professional.com/binary/manualsmedia/o554384v21_160992AB73_202501.pdf",
+      "access_date": "2026-09-04",
+      "document_date": "2025-01",
+      "applicable_scope": "UK-linked multilingual manual; GDE 18V-12 with listed hammers",
+      "locator": "English printed pp8–9",
+      "relevant_statement": "GBH 18V-22 permitted; diameter 4–12 mm; maximum bit length 165 mm; maximum depth 100 mm; battery >3.0 Ah. Intact filter required; no wood, metal or plastic drilling.",
+      "new_this_round": true,
+      "verification_limit": null
+    },
+    {
+      "source_id": "N05",
+      "manufacturer": "Hilti",
+      "title": "Nuron TE 6-22 Cordless rotary hammer, #2253058",
+      "url": "https://www.hilti.co.uk/c/CLS_POWER_TOOLS_7125/CLS_ROTARY_HAMMERS_7125/r13250305?itemCode=2253058",
+      "access_date": "2026-09-04",
+      "document_date": null,
+      "applicable_scope": "UK; TE 6-22 (05)",
+      "locator": "Technical data; dust system compatibility",
+      "relevant_statement": "TE-C/SDS-Plus; hammer range 4–28 mm, optimum 4–16 mm; TE DRS-4/6 compatible. Batteries/charger configured separately.",
+      "new_this_round": true,
+      "verification_limit": null
+    },
+    {
+      "source_id": "N06",
+      "manufacturer": "Hilti",
+      "title": "TE-CX 10/17 MP16, #2022035",
+      "url": "https://www.hilti.co.uk/c/CLS_POWER_TOOL_INSERT_7126/CLS_CONCRETE_MASONRY_DRILL_BITS_7126/r4429?CHD_DIAMETER_DEV=10+mm&CHD_WORKING_LENGTH_DEV=100+mm&combo_content=7215ee9c7d9dc229d2921a40e899ec5f&itemCode=2022035&salespackquantity=16",
+      "access_date": "2026-09-04",
+      "document_date": null,
+      "applicable_scope": "UK; selected item identity verified, selected geometry unverified",
+      "locator": "Product heading; series attributes",
+      "relevant_statement": "TE-C/SDS-Plus; concrete; hammer drilling. Independent dimension selectors and URL parameters are not evidence of a selected SKU dimension tuple.",
+      "new_this_round": true,
+      "verification_limit": null
+    },
+    {
+      "source_id": "N07",
+      "manufacturer": "Hilti",
+      "title": "TE DRS 4/6 Dust removal system, #2268002",
+      "url": "https://www.hilti.co.uk/c/CLS_DUST_WATER_MANAGEMENT/CLS_ON_BOARD_DUST_REMOVAL_SYS/r14311843?itemCode=2268002",
+      "access_date": "2026-09-04",
+      "document_date": null,
+      "applicable_scope": "UK; TE DRS-4/6 (01) ROW",
+      "locator": "Compatibility; technical data; features",
+      "relevant_statement": "TE 4-22 / TE 6-22; diameter 4–20 mm; generic depth 110 mm; no external vacuum. M-Class and HEPA wording need configuration clarification.",
+      "new_this_round": true,
+      "verification_limit": null
+    },
+    {
+      "source_id": "N08",
+      "manufacturer": "Hilti",
+      "title": "Operating Instruction TE DRS-4/6, 2290878",
+      "url": "https://productdata.hilti.com/APQ_HC_RAW/PUB_5664762_000.pdf",
+      "access_date": "2026-09-04",
+      "document_date": null,
+      "applicable_scope": "UK-linked manual; TE 6-22 (05) / TE 4-22 (03)",
+      "locator": "English p13 (PDF p19), pp14–15",
+      "relevant_statement": "TE 6-22 + TE-CX XX/17: 80 mm; XX/15: 60 mm. TE 4-22 + XX/22: 110 mm. Integral fan uses host battery. No wood or metal.",
+      "new_this_round": true,
+      "verification_limit": "Research lane read English text; root re-open returned internal error. Conflicting depths quarantined."
+    },
+    {
+      "source_id": "N09",
+      "manufacturer": "Hilti",
+      "title": "TE 6-22 & SID 4-22 Drill & Fasten – Standard Set, #2486910",
+      "url": "https://www.hilti.co.uk/c/CLS_POWER_TOOLS_7125/CLS_POWER_TOOLS_COMBO_KITS_7125/r25115169",
+      "access_date": "2026-09-04",
+      "document_date": null,
+      "applicable_scope": "UK; compatibility evidence only, not a required multi-tool purchase",
+      "locator": "Kit contents",
+      "relevant_statement": "TE 6-22 (05), B 22-85 Li-ion and C 4-22 (02) 220–240V appear together in official set.",
+      "new_this_round": true,
+      "verification_limit": null
+    },
+    {
+      "source_id": "N10",
+      "manufacturer": "Bosch",
+      "title": "EXPERT SDS max-8X Hammer Drill Bit, 2608900228",
+      "url": "https://www.bosch-professional.com/gb/en/expert-sds-max-8x-hammer-drill-bit-2867203-ocs-ac/",
+      "access_date": "2026-09-04",
+      "document_date": null,
+      "applicable_scope": "UK; specific SKU row",
+      "locator": "2608900228 specification table; compatibility",
+      "relevant_statement": "Diameter 20 mm, working length 200 mm, total length 320 mm. Fits SDS-Max rotary hammers; concrete listed.",
+      "new_this_round": true,
+      "verification_limit": null
+    },
+    {
+      "source_id": "N11",
+      "manufacturer": "Bosch",
+      "title": "PRO GDE 68 System Accessories",
+      "url": "https://www.bosch-professional.com/gb/en/products/gde-68-1600A001G7",
+      "access_date": "2026-09-04",
+      "document_date": null,
+      "applicable_scope": "UK; order 1600A001G7",
+      "locator": "Technical data; product highlights",
+      "relevant_statement": "Wall-mounted drilling dust guard; compatible with all drilling tools and Click & Clean; maximum diameter 68 mm. No depth rating established here.",
+      "new_this_round": true,
+      "verification_limit": null
+    },
+    {
+      "source_id": "N12",
+      "manufacturer": "Bosch",
+      "title": "PRO GAS 35 M AFC Corded Dust Extractor",
+      "url": "https://www.bosch-professional.com/gb/en/products/gas-35-m-afc-06019C3160",
+      "access_date": "2026-09-04",
+      "document_date": null,
+      "applicable_scope": "UK; choose 06019C3170 110V variant, not selected 240V variant",
+      "locator": "Variant contents; dust class; highlights",
+      "relevant_statement": "Click & Clean, M-class, automatic filter cleaning; 110V variant includes hose/adapter 2608000566, PES filter 2607432034 and disposal bag 2607432043.",
+      "new_this_round": true,
+      "verification_limit": null
+    },
+    {
+      "source_id": "N13",
+      "manufacturer": "Bosch",
+      "title": "Dust Control brochure",
+      "url": "https://www.bosch-professional.com/gb/media/service_relaunch/downloads/kataloge/51577-bosch-dust-control-brochure.pdf",
+      "access_date": "2026-09-04",
+      "document_date": null,
+      "applicable_scope": "UK; GDE wall attachment and dust classification explanation",
+      "locator": "Printed pp26–29",
+      "relevant_statement": "GDE 68 supports drilling concrete and adheres to the wall by vacuum suction. HEPA filter classification does not by itself establish L/M/H system class or compliance.",
+      "new_this_round": true,
+      "verification_limit": null
+    }
+  ],
+  "audit": {
+    "original_rule_count": 20,
+    "GREEN": 7,
+    "YELLOW": 7,
+    "RED": 6,
+    "original_source_count": 19,
+    "new_official_source_count": 13,
+    "total_source_count": 32,
+    "connection_verified_chains": [
+      "A",
+      "C"
+    ],
+    "conditional_chain": [
+      "B"
+    ],
+    "fixed_sku_unconditional_approvals": 0,
+    "freeze_recommendation": "READY TO FREEZE",
+    "freeze_limitation": "Freeze the evidence-bounded rule baseline with all unresolved values quarantined; no claim that every chain supports a deterministic final job recommendation."
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "name": "visual-job-solver",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Concrete Drilling Decision Guide / Evidence Screener (V0.1) — start with the job, not the product.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "node scripts/verify-frozen.mjs && next build",
+    "verify": "node scripts/verify-frozen.mjs",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test tests/engine/*.test.ts"
+  },
+  "dependencies": {
+    "next": "^15.5.25",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.7",
+    "@types/node": "^26.4.1",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.7",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^15.5.25",
+    "marked": "^18.0.11",
+    "tsx": "^4.23.13",
+    "typescript": "^6.0.3"
+  }
+}
