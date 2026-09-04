@@ -6,6 +6,9 @@ import "@/app/globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
+  verification: {
+    google: "SWCb1kVpxPhTAa9earPxsqyR7tKIva1yLTcR3VitWhw",
+  },
   title: {
     default: pageTitle(),
     template: `%s | ${SITE.name}`,
