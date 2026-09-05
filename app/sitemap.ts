@@ -10,6 +10,7 @@ const ROUTES: Array<{ path: string; priority: number }> = [
   { path: "/guides/hammer-drill-vs-rotary-hammer", priority: 0.8 },
   { path: "/guides/sds-plus-vs-sds-max", priority: 0.8 },
   { path: "/about", priority: 0.5 },
+  { path: "/contact", priority: 0.5 },
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

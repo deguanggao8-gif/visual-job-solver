@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import {
   emptyJob,
   evaluateJob,
@@ -426,6 +427,9 @@ function ResultReport({ outcome }: { outcome: SelectorOutcome }) {
           <SourceList ids={outcome.sources} />
         </section>
       )}
+      <p>
+        Need help with your next step? <Link href="/contact">Submit a job</Link>.
+      </p>
     </div>
   );
 }

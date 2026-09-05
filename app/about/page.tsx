@@ -117,6 +117,9 @@ export default function AboutPage() {
         </p>
         <SourceList ids={allIds} />
       </section>
+      <p>
+        Have a job you need help solving? <Link href="/contact">Submit a job</Link>.
+      </p>
     </div>
   );
 }

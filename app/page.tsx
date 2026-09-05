@@ -35,6 +35,9 @@ export default function HomePage() {
               Drill holes in concrete
             </Link>
           </div>
+          <p className="small">
+            Have a job to discuss? <Link href="/contact">Submit a job</Link>.
+          </p>
         </section>
 
         <section aria-labelledby="h-what">
