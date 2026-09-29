@@ -12,7 +12,7 @@ export default function Footer() {
             cannot determine, and what to verify next.
           </p>
           <p className="footer-note">
-            Rules and content frozen 2026-09-04. Nothing on this site is
+            Concrete drilling rules and content frozen 2026-09-04. Nothing on this site is
             engineering, structural, or dust-exposure compliance approval.
             Manufacturer instructions and local regulations apply.
           </p>

@@ -24,8 +24,8 @@ export default function HomePage() {
           <p>
             Tell us about the work and we’ll help you understand what your job
             requires, what the manufacturer evidence can and cannot determine,
-            and what to check next. V0.1 covers one job:{" "}
-            <strong>drilling holes in concrete</strong>.
+            and what to check next. Start with{" "}
+            <strong>drilling holes in concrete</strong>, or check cooling options for a German apartment.
           </p>
           <div className="btn-row">
             <Link className="btn" href="/tool-selector/concrete-drilling">
@@ -40,6 +40,7 @@ export default function HomePage() {
           </p>
         </section>
 
+        <section aria-labelledby="h-cooling"><div className="card"><span className="chip">Germany · Beta</span><h2 id="h-cooling">Cool your apartment</h2><p>Check your window, installation permissions and outdoor space before buying an AC. Compare three cooling categories and the checks each one needs.</p><Link className="btn" href="/cooling/germany-apartment">Check my cooling setup</Link></div></section>
         <section aria-labelledby="h-what">
           <h2 id="h-what">How this site helps</h2>
           <div className="grid grid-3">
