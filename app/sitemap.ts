@@ -6,6 +6,7 @@ export const dynamic = "force-static";
 const ROUTES: Array<{ path: string; priority: number }> = [
   { path: "/", priority: 1 },
   { path: "/cooling/germany-apartment", priority: 0.9 },
+  { path: "/cooling/klimaanlage-mietwohnung-ohne-bohren/", priority: 0.8 },
   { path: "/tool-selector/concrete-drilling", priority: 0.9 },
   { path: "/jobs/drill-holes-in-concrete", priority: 0.9 },
   { path: "/guides/hammer-drill-vs-rotary-hammer", priority: 0.8 },

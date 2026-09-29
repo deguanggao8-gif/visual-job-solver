@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { absolute } from "@/lib/seo";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import CoolingSolver from "@/components/cooling/CoolingSolver";
@@ -16,5 +17,6 @@ export default function GermanyCoolingPage() {
   return <div lang="de" className={`container page ${styles.page}`}>
     <Breadcrumbs items={[{ label: "Startseite", href: "/" }, { label: "Kühllösungen für deine Wohnung" }]} />
     <CoolingSolver />
+    <p className="small"><Link href="/cooling/klimaanlage-mietwohnung-ohne-bohren/">Klimaanlage in der Mietwohnung ohne Bohren: Möglichkeiten im Überblick</Link></p>
   </div>;
 }
