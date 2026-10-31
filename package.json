@@ -9,7 +9,7 @@
     "verify": "node scripts/verify-frozen.mjs",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "node --import tsx --test tests/engine/*.test.ts"
+    "test": "node --import tsx --test tests/engine/*.test.ts tests/assessment/*.test.ts"
   },
   "dependencies": {
     "next": "^15.5.25",

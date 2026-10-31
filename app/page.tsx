@@ -15,28 +15,39 @@ export default function HomePage() {
   return (
     <>
       <JsonLd data={jsonLd} />
-      <div className="container page page-narrow">
+      <div className="container page">
         <section className="page-hero">
-          <h1>What are you trying to do?</h1>
+          <span className="chip">Independent, evidence-led guidance</span>
+          <h1>Start with the job. Choose the right level of help.</h1>
           <p className="lead">
-            Not sure which tool you need? Start with the job, not the brand.
+            Use a free consumer decision tool, or request an independent HVAC
+            technical assessment for a defined project.
           </p>
-          <p>
-            Tell us about the work and we’ll help you understand what your job
-            requires, what the manufacturer evidence can and cannot determine,
-            and what to check next. Start with{" "}
-            <strong>drilling holes in concrete</strong>, or check cooling options for a German apartment.
-          </p>
-          <div className="btn-row">
-            <Link className="btn" href="/tool-selector/concrete-drilling">
-              Check what your concrete drilling job requires
-            </Link>
-            <Link className="btn btn-secondary" href="/jobs/drill-holes-in-concrete">
-              Drill holes in concrete
-            </Link>
+          <div className="business-paths">
+            <article className="business-path">
+              <p className="eyebrow">Consumer Tools</p>
+              <h2>Make a better-informed next decision</h2>
+              <p>Free, self-guided tools that explain practical constraints, evidence limits and what to verify before buying or installing.</p>
+              <div className="btn-row">
+                <Link className="btn" href="/tool-selector/concrete-drilling">Explore consumer tools</Link>
+                <Link className="btn btn-secondary" href="/cooling/germany-apartment">Check a cooling setup</Link>
+              </div>
+            </article>
+            <article className="business-path business-path--service">
+              <p className="eyebrow">Engineering Services</p>
+              <h2>Get an independent HVAC technical assessment</h2>
+              <p>A focused, documented review for owners, operators and project teams who need clearer technical options and decision risks.</p>
+              <p className="price-line"><strong>Standard MVP: USD 900–1,500</strong> <span>test-market range</span></p>
+              <div className="btn-row">
+                <Link className="btn" href="/services/hvac-technical-assessment">View the service</Link>
+                <Link className="btn btn-secondary" href="/request-assessment">Request an assessment</Link>
+              </div>
+            </article>
           </div>
-          <p className="small">
-            Have a job to discuss? <Link href="/contact">Submit a job</Link>.
+          <p className="small muted">
+            Visual Job Solver does not sell equipment or accept supplier commissions.
+            Engineering services are scoped technical assessments—not statutory design,
+            certification, permitting, or locally licensed professional services.
           </p>
         </section>
 

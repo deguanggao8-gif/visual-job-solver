@@ -20,6 +20,9 @@ const nextConfig = {
   output: "export",
   trailingSlash: true,
   images: { unoptimized: true },
+  // Keep file tracing inside this checkout when the repository is used as a
+  // Git worktree beneath a directory that also contains unrelated lockfiles.
+  outputFileTracingRoot: process.cwd(),
   eslint: { dirs: ["app", "components", "lib", "tests"] },
 };
 

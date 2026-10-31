@@ -24,6 +24,8 @@ export default function Footer() {
             <li><Link href="/tool-selector/concrete-drilling">Concrete drilling decision guide</Link></li>
             <li><Link href="/jobs/drill-holes-in-concrete">Drill holes in concrete</Link></li>
             <li><Link href="/about">About this project</Link></li>
+            <li><Link href="/services/hvac-technical-assessment">HVAC technical assessment</Link></li>
+            <li><Link href="/request-assessment">Request an assessment</Link></li>
             <li lang="de"><Link href="/impressum/">Impressum</Link></li>
             <li lang="de"><Link href="/datenschutz/">Datenschutzerklärung</Link></li>
           </ul>

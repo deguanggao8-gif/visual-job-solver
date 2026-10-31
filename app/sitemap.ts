@@ -13,6 +13,8 @@ const ROUTES: Array<{ path: string; priority: number }> = [
   { path: "/guides/sds-plus-vs-sds-max", priority: 0.8 },
   { path: "/about", priority: 0.5 },
   { path: "/contact", priority: 0.5 },
+  { path: "/services/hvac-technical-assessment", priority: 0.8 },
+  { path: "/request-assessment", priority: 0.7 },
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
