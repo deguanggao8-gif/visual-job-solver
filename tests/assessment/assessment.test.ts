@@ -59,8 +59,48 @@ test("does not claim receipt when Turnstile or mail delivery fails", async () =>
   globalThis.fetch = async (input) => String(input).includes("siteverify")
     ? Response.json({ success: true, action: "assessment_submit", hostname: "visualjobsolver.com" })
     : Response.json({ message: "provider failure" }, { status: 500 });
-  try { assert.equal((await handleAssessment({ request: request(), env: env() })).status, 502); }
+  try {
+    const response = await handleAssessment({ request: request(), env: env() });
+    assert.equal(response.status, 502);
+    assert.equal((await response.json()).error.code, "DELIVERY_FAILED");
+  }
   finally { globalThis.fetch = original; }
+});
+
+test("returns precise validation and challenge error codes", async () => {
+  const invalid = await handleAssessment({ request: request({ ...valid, "cf-turnstile-response": "" }), env: env() });
+  assert.equal(invalid.status, 422);
+  assert.equal((await invalid.json()).error.code, "VALIDATION_FAILED");
+  const original = globalThis.fetch;
+  globalThis.fetch = async () => Response.json({ success: false });
+  try {
+    const challenged = await handleAssessment({ request: request(), env: env() });
+    assert.equal(challenged.status, 403);
+    assert.equal((await challenged.json()).error.code, "CHALLENGE_FAILED");
+  } finally { globalThis.fetch = original; }
+});
+
+test("diagnostic logs contain only approved fields and no sensitive values", async () => {
+  const originalFetch = globalThis.fetch;
+  const originalLog = console.log;
+  const logs: string[] = [];
+  console.log = (...args: unknown[]) => { logs.push(args.map(String).join(" ")); };
+  globalThis.fetch = async (input) => String(input).includes("siteverify")
+    ? Response.json({ success: true, action: "assessment_submit", hostname: "visualjobsolver.com" })
+    : Response.json({ message: "provider failure" }, { status: 500 });
+  try {
+    await handleAssessment({ request: request(), env: env() });
+    assert.equal(logs.length, 1);
+    const event = JSON.parse(logs[0]);
+    assert.deepEqual(Object.keys(event).sort(), ["durationMs", "errorCode", "requestId", "stage", "status"]);
+    const serialized = JSON.stringify(event);
+    for (const sensitive of [valid.email, valid.brief, "203.0.113.10", "test-token", "secret", "local-test-key"]) {
+      assert.equal(serialized.includes(sensitive), false);
+    }
+  } finally {
+    globalThis.fetch = originalFetch;
+    console.log = originalLog;
+  }
 });
 
 test("rate limits repeated attempts without storing the raw IP", async () => {

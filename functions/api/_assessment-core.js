@@ -88,31 +88,36 @@ async function sendEmail(data, env) {
 
 export async function handleAssessment({ request, env }) {
   const requestId = crypto.randomUUID();
-  if (request.method !== "POST") return reply(405, "METHOD_NOT_ALLOWED", "Use POST.");
-  if ((request.headers.get("content-type") || "").split(";", 1)[0].trim().toLowerCase() !== "application/json") return reply(415, "UNSUPPORTED_MEDIA_TYPE", "Use application/json.");
+  const startedAt = Date.now();
+  const respond = (stage, status, errorCode, message, extra = {}) => {
+    console.log(JSON.stringify({ requestId, stage, status, errorCode: errorCode || "", durationMs: Date.now() - startedAt }));
+    return reply(status, errorCode, message, extra);
+  };
+  if (request.method !== "POST") return respond("method", 405, "METHOD_NOT_ALLOWED", "Use POST.");
+  if ((request.headers.get("content-type") || "").split(";", 1)[0].trim().toLowerCase() !== "application/json") return respond("content_type", 415, "UNSUPPORTED_MEDIA_TYPE", "Use application/json.");
   const required = ["TURNSTILE_SECRET_KEY", "TURNSTILE_EXPECTED_HOSTNAME", "RESEND_API_KEY", "ASSESSMENT_FROM_EMAIL", "ASSESSMENT_TO_EMAIL", "RATE_LIMIT_HASH_KEY"];
-  if (!env?.ASSESSMENT_SECURITY || required.some((name) => !env?.[name])) return reply(503, "SERVICE_NOT_CONFIGURED", "Submission service is not configured.");
+  if (!env?.ASSESSMENT_SECURITY || required.some((name) => !env?.[name])) return respond("configuration", 503, "SERVICE_NOT_CONFIGURED", "Submission service is not configured.");
   let raw;
-  try { raw = await readLimitedJson(request); } catch (error) { return error.message === "TOO_LARGE" ? reply(413, "PAYLOAD_TOO_LARGE", "Request body is too large.") : reply(400, "INVALID_JSON", "Request body must be valid JSON."); }
+  try { raw = await readLimitedJson(request); } catch (error) { return error.message === "TOO_LARGE" ? respond("body", 413, "PAYLOAD_TOO_LARGE", "Request body is too large.") : respond("body", 400, "INVALID_JSON", "Request body must be valid JSON."); }
   const data = validate(raw);
-  if (!data) return reply(422, "VALIDATION_FAILED", "One or more fields are invalid.");
+  if (!data) return respond("validation", 422, "VALIDATION_FAILED", "One or more fields are invalid.");
   const replayKey = `submission:${data.submissionId}`;
   const prior = await env.ASSESSMENT_SECURITY.get(replayKey);
-  if (prior === "sent") return reply(200, "", "", { submissionId: data.submissionId, duplicate: true });
-  if (prior === "processing") return reply(409, "SUBMISSION_IN_PROGRESS", "This submission is already being processed.");
+  if (prior === "sent") return respond("duplicate", 200, "", "", { submissionId: data.submissionId, duplicate: true });
+  if (prior === "processing") return respond("idempotency", 409, "SUBMISSION_IN_PROGRESS", "This submission is already being processed.");
   const ip = request.headers.get("CF-Connecting-IP") || "";
   const bucket = Math.floor(Date.now() / 3_600_000);
   const ipKey = `rate:${await opaqueIpKey(ip, env.RATE_LIMIT_HASH_KEY)}:${bucket}`;
   const count = Number(await env.ASSESSMENT_SECURITY.get(ipKey) || 0);
-  if (count >= 5) return reply(429, "RATE_LIMITED", "Too many requests. Try again later.");
+  if (count >= 5) return respond("rate_limit", 429, "RATE_LIMITED", "Too many requests. Try again later.");
   await env.ASSESSMENT_SECURITY.put(ipKey, String(count + 1), { expirationTtl: 7200 });
   let human = false;
   try { human = await verifyTurnstile(data.turnstileToken, ip, env, data.submissionId); } catch { /* no sensitive logging */ }
-  if (!human) return reply(403, "CHALLENGE_FAILED", "Anti-abuse verification failed. Refresh and try again.");
+  if (!human) return respond("turnstile", 403, "CHALLENGE_FAILED", "Anti-abuse verification failed. Refresh and try again.");
   await env.ASSESSMENT_SECURITY.put(replayKey, "processing", { expirationTtl: 600 });
   let sent = false;
   try { sent = await sendEmail(data, env); } catch { /* provider failure, no customer data logged */ }
-  if (!sent) { await env.ASSESSMENT_SECURITY.delete(replayKey); return reply(502, "DELIVERY_FAILED", "The mail provider did not confirm acceptance. No receipt is claimed.", { requestId }); }
+  if (!sent) { await env.ASSESSMENT_SECURITY.delete(replayKey); return respond("resend", 502, "DELIVERY_FAILED", "The mail provider did not confirm acceptance. No receipt is claimed.", { requestId }); }
   await env.ASSESSMENT_SECURITY.put(replayKey, "sent", { expirationTtl: 86400 });
-  return reply(200, "", "", { submissionId: data.submissionId });
+  return respond("complete", 200, "", "", { submissionId: data.submissionId });
 }

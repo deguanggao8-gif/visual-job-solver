@@ -1,21 +1,53 @@
 "use client";
 
 import Script from "next/script";
-import { FormEvent, useRef, useState } from "react";
+import { FormEvent, useCallback, useEffect, useReducer, useRef, useState } from "react";
+import { assessmentErrorMessage, canSubmitAssessment, challengeReducer, initialChallengeState, type FormState } from "./assessment-state";
 
-type FormState = "idle" | "submitting" | "success" | "error";
 const endpoint = process.env.NEXT_PUBLIC_ASSESSMENT_ENDPOINT?.trim();
 const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim();
 
 declare global {
-  interface Window { turnstile?: { reset: (widget?: HTMLElement) => void } }
+  interface Window {
+    turnstile?: {
+      render: (container: HTMLElement, options: Record<string, unknown>) => string;
+      reset: (widgetId?: string) => void;
+    };
+  }
 }
 
 export default function AssessmentForm() {
   const [state, setState] = useState<FormState>("idle");
   const [message, setMessage] = useState("");
+  const [scriptReady, setScriptReady] = useState(false);
+  const [challenge, dispatchChallenge] = useReducer(challengeReducer, initialChallengeState);
   const challengeRef = useRef<HTMLDivElement>(null);
+  const widgetIdRef = useRef<string | undefined>(undefined);
   const submissionIdRef = useRef("");
+
+  useEffect(() => {
+    if (!scriptReady || !window.turnstile || !challengeRef.current || widgetIdRef.current) return;
+    widgetIdRef.current = window.turnstile.render(challengeRef.current, {
+      sitekey: turnstileSiteKey,
+      action: "assessment_submit",
+      theme: "auto",
+      callback: (token: string) => dispatchChallenge({ type: "VERIFIED", token }),
+      "expired-callback": () => {
+        dispatchChallenge({ type: "EXPIRED" });
+        if (widgetIdRef.current) window.turnstile?.reset(widgetIdRef.current);
+      },
+      "error-callback": () => {
+        dispatchChallenge({ type: "FAILED" });
+        if (widgetIdRef.current) window.turnstile?.reset(widgetIdRef.current);
+      },
+    });
+    dispatchChallenge({ type: "READY" });
+  }, [scriptReady]);
+
+  const resetChallenge = useCallback(() => {
+    dispatchChallenge({ type: "RESET" });
+    if (widgetIdRef.current) window.turnstile?.reset(widgetIdRef.current);
+  }, []);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -27,28 +59,39 @@ export default function AssessmentForm() {
       setMessage("Online submission is not configured yet. No information has been sent.");
       return;
     }
+    if (!canSubmitAssessment(state, challenge)) {
+      setState("error");
+      setMessage("Complete the anti-abuse check before submitting.");
+      return;
+    }
     setState("submitting");
     try {
       const payload = Object.fromEntries(new FormData(form).entries());
+      payload["cf-turnstile-response"] = challenge.token;
       // Keep one ID across safe retries so the Function and mail provider can
       // recognize the same logical inquiry and suppress duplicate delivery.
       submissionIdRef.current ||= crypto.randomUUID();
       payload.submissionId = submissionIdRef.current;
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify(payload),
-      });
+      let response: Response;
+      try {
+        response = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify(payload),
+        });
+      } catch { throw new Error("NETWORK_ERROR"); }
       const result = await response.json().catch(() => null) as { ok?: boolean; error?: { code?: string; message?: string } } | null;
       if (!response.ok || !result?.ok) throw new Error(result?.error?.code || `HTTP_${response.status}`);
       setState("success");
       setMessage("Your request was received. We will review the scope before proposing any engagement.");
       form.reset();
       submissionIdRef.current = "";
-    } catch {
+      resetChallenge();
+    } catch (error) {
+      const code = error instanceof Error ? error.message : "NETWORK_ERROR";
       setState("error");
-      setMessage("We could not confirm receipt. Your request may not have been delivered. Please try again after the submission service is available.");
-      window.turnstile?.reset(challengeRef.current ?? undefined);
+      setMessage(assessmentErrorMessage(code));
+      resetChallenge();
     }
   }
 
@@ -66,10 +109,10 @@ export default function AssessmentForm() {
     <div className="field"><label htmlFor="timeline">Target timeline</label><select id="timeline" name="timeline" required defaultValue=""><option value="" disabled>Select one</option><option>Within 2 weeks</option><option>Within 1 month</option><option>Within 3 months</option><option>Exploratory / no fixed date</option></select></div>
     <label className="checkbox-line"><input name="privacyConsent" value="accepted" type="checkbox" required /><span>I agree that the information I provide may be processed to assess and respond to this request. I have read the <a href="/datenschutz/" target="_blank">privacy notice</a>.</span></label>
     <label className="checkbox-line"><input name="scopeAcknowledgement" value="accepted" type="checkbox" required /><span>I understand that this request does not create an engagement and that the service is not statutory design, certification, permitting, or locally licensed professional practice.</span></label>
-    {turnstileSiteKey && <><Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" strategy="afterInteractive" /><div ref={challengeRef} className="cf-turnstile" data-sitekey={turnstileSiteKey} data-action="assessment_submit" data-theme="auto" /></>}
+    {turnstileSiteKey && <><Script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" strategy="afterInteractive" onLoad={() => setScriptReady(true)} /><div ref={challengeRef} className="cf-turnstile" /><p className="small muted" role="status">{challenge.status === "verified" ? "Anti-abuse check complete. You can submit the form." : challenge.status === "expired" ? "The anti-abuse check expired. Please complete it again." : challenge.status === "error" ? "The anti-abuse check failed to load or verify. Please try it again." : "Complete the anti-abuse check to enable submission."}</p></>}
     {(!endpoint || !turnstileSiteKey) && <div className="form-status form-status--notice" role="status"><strong>Development preview:</strong> the secure receiving endpoint or anti-abuse check is not configured. Online submission is unavailable and this form is not production-ready.</div>}
     {message && <div className={`form-status form-status--${state}`} role={state === "error" ? "alert" : "status"}>{message}</div>}
-    <button className="btn" type="submit" disabled={!endpoint || !turnstileSiteKey || state === "submitting"}>{state === "submitting" ? "Sending…" : "Request an assessment"}</button>
+    <button className="btn" type="submit" disabled={!endpoint || !turnstileSiteKey || !canSubmitAssessment(state, challenge)}>{state === "submitting" ? "Sending…" : "Request an assessment"}</button>
     <p className="small muted">No payment is taken through this form. Scope, availability, fee and terms must be agreed separately in writing.</p>
   </form>;
 }
